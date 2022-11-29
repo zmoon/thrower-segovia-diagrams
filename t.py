@@ -77,6 +77,7 @@ radius = 0.4
 kwargs = dict(zorder=10, clip_on=False)
 prev_string = prev_finger = None
 v0 = None
+n = None  # scale degree
 for string, fret, finger in data["C-a"]:
     x, y = fret - 0.5, string
 
@@ -84,6 +85,9 @@ for string, fret, finger in data["C-a"]:
 
     if v0 is None:
         v0 = v
+
+    if v == v0:  # reset
+        n = 1
 
     color = "0.65" if v % 12 == v0 % 12 else "0.2"
     if (
@@ -106,9 +110,11 @@ for string, fret, finger in data["C-a"]:
     ax.add_patch(p)
 
     ax.text(x, y, finger, ha="center", va="center", color="w", size=16, zorder=20)
+    ax.text(x, y + 0.3, n, ha="center", va="center", color="w", size=8, zorder=20)
 
     prev_string = string
     prev_finger = finger
+    n += 1
 
 ax.axis("scaled")
 
@@ -123,4 +129,4 @@ ax.yaxis.set_major_locator(plt.NullLocator())
 
 # %% Save figs?
 
-# from savefigs import savefigs; savefigs(formats=["svg"])
+# from savefigs import savefigs; savefigs(formats=["svg", "png"])
