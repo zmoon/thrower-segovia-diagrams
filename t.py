@@ -93,7 +93,7 @@ for string, fret, finger in data["C-a"]:
         and finger <= prev_finger
     ):
         # Must have shifted
-        s = 2 / math.sqrt(3) * radius * 2
+        s = 2 / math.sqrt(3) * radius * 2 * 0.9
         sgn = -1  # +1 for pointing down
         p = mpl.patches.Polygon(
             [(x - s / 2, y - sgn * radius), (x, y + sgn * radius), (x + s / 2, y - sgn * radius)],
@@ -116,8 +116,9 @@ ax.set_xlim(fret_lims)
 d = 0.23
 ax.set_ylim((6 + d, 1 - d))
 
-# ax.xaxis.set_major_locator(plt.NullLocator())
-# ax.yaxis.set_major_locator(plt.NullLocator())
+# Remove ax labels
+ax.xaxis.set_major_locator(plt.NullLocator())
+ax.yaxis.set_major_locator(plt.NullLocator())
 
 
 # %% Save figs?
