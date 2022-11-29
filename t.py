@@ -72,12 +72,20 @@ for y in range(1, 7):
     ax.axhline(y, c="silver", lw=1 + 0.4 * y, zorder=1)
 
 # Segovia
+vals = [4, 11, 7, 2, 9, 4]
 radius = 0.4
 kwargs = dict(zorder=10, clip_on=False)
 prev_string = prev_finger = None
+v0 = None
 for string, fret, finger in data["C-a"]:
     x, y = fret - 0.5, string
-    color = "0.2"
+
+    v = vals[string - 1] + fret
+
+    if v0 is None:
+        v0 = v
+
+    color = "0.65" if v % 12 == v0 % 12 else "0.2"
     if (
         prev_string is not None
         and prev_finger is not None
@@ -107,6 +115,9 @@ ax.axis("scaled")
 ax.set_xlim(fret_lims)
 d = 0.23
 ax.set_ylim((6 + d, 1 - d))
+
+# ax.xaxis.set_major_locator(plt.NullLocator())
+# ax.yaxis.set_major_locator(plt.NullLocator())
 
 
 # %% Save figs?
