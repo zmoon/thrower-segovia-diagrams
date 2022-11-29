@@ -3,7 +3,7 @@ Created on Mon Nov 28 18:56:27 2022
 
 @author: zmoon
 """
-# from pathlib import Path
+import math
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -72,13 +72,35 @@ for y in range(1, 7):
     ax.axhline(y, c="silver", lw=1 + 0.4 * y, zorder=1)
 
 # Segovia
+radius = 0.4
+kwargs = dict(zorder=10, clip_on=False)
+prev_string = prev_finger = None
 for string, fret, finger in data["C-a"]:
     x, y = fret - 0.5, string
-    p = mpl.patches.Circle((x, y), radius=0.4, color="0.2", zorder=10, clip_on=False)
+    color = "0.2"
+    if (
+        prev_string is not None
+        and prev_finger is not None
+        and string == prev_string
+        and finger <= prev_finger
+    ):
+        # Must have shifted
+        s = 2 / math.sqrt(3) * radius * 2
+        sgn = -1  # +1 for pointing down
+        p = mpl.patches.Polygon(
+            [(x - s / 2, y - sgn * radius), (x, y + sgn * radius), (x + s / 2, y - sgn * radius)],
+            closed=True,
+            color=color,
+            **kwargs
+        )
+    else:
+        p = mpl.patches.Circle((x, y), radius=radius, color=color, **kwargs)
     ax.add_patch(p)
 
     ax.text(x, y, finger, ha="center", va="center", color="w", size=16, zorder=20)
 
+    prev_string = string
+    prev_finger = finger
 
 ax.axis("scaled")
 
