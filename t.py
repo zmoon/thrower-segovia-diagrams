@@ -43,11 +43,18 @@ data = {
     ]
 }
 
+# C-d is just C-a in reverse
+data["C-d"] = data["C-a"][::-1]
+
 
 # %% Plot
 
-fig, ax = plt.subplots(figsize=(8, 3.2))
+which = "C-d"
 
+assert which[-2:] in {"-a", "-d"}, "ascending or descending"
+ascending = which.endswith("-a")
+
+fig, ax = plt.subplots(figsize=(8, 3.2))
 
 # Frets
 fret_lims = (0, 13)
@@ -78,7 +85,7 @@ kwargs = dict(zorder=10, clip_on=False)
 prev_string = prev_finger = None
 v0 = None
 n = None  # scale degree
-for string, fret, finger in data["C-a"]:
+for string, fret, finger in data[which]:
     x, y = fret - 0.5, string
 
     v = vals[string - 1] + fret
@@ -94,7 +101,7 @@ for string, fret, finger in data["C-a"]:
         prev_string is not None
         and prev_finger is not None
         and string == prev_string
-        and finger <= prev_finger
+        and (finger <= prev_finger if ascending else finger >= prev_finger)
     ):
         # Must have shifted
         s = 2 / math.sqrt(3) * radius * 2 * 0.9
@@ -125,6 +132,8 @@ ax.set_ylim((6 + d, 1 - d))
 # Remove ax labels
 ax.xaxis.set_major_locator(plt.NullLocator())
 ax.yaxis.set_major_locator(plt.NullLocator())
+
+plt.show()
 
 
 # %% Save figs?
