@@ -23,6 +23,7 @@ plt.rcParams.update(
 # %% Data
 
 data = {
+    #
     # Pattern 1
     "C-a": [
         # string, fret, finger
@@ -41,7 +42,40 @@ data = {
         (1, 5, 1),
         (1, 7, 3),
         (1, 8, 4),
-    ]
+    ],
+    #
+    # Pattern 2
+    "Amm-a": [  # "mm" for melodic minor
+        (6, 5, 1),
+        (6, 7, 3),
+        (6, 8, 4),
+        (5, 5, 1),
+        (5, 7, 3),
+        (5, 9, 1),
+        (5, 11, 3),
+        (5, 12, 4),
+        (4, 9, 1),
+        (4, 10, 2),
+        (4, 12, 4),
+        (3, 9, 1),
+        (3, 11, 3),
+        (2, 9, 1),
+        (2, 10, 1),
+        (2, 12, 3),
+        (2, 13, 4),
+        (1, 10, 1),
+        (1, 12, 3),
+        (1, 14, 1),
+        (1, 16, 3),
+        (1, 17, 4),
+    ],
+    # "Am-d": [
+    #     # ...
+    #     (6, 10, 4),
+    #     (6, 8, 4),
+    #     (6, 7, 3),
+    #     (6, 5, 1),
+    # ],
 }
 
 # Pattern 1 is also used for D, Db, Eb
@@ -55,15 +89,15 @@ for tonic in ["C", "D", "Db", "Eb"]:
 
 # %% Plot
 
-which = "D-d"
+which = "Amm-a"
 
 assert which[-2:] in {"-a", "-d"}, "ascending or descending"
 ascending = which.endswith("-a")
 
-fig, ax = plt.subplots(figsize=(8, 3.2))
+fig, ax = plt.subplots(figsize=(10, 3.2))
 
 # Frets
-fret_lims = (0, 13)
+fret_lims = (0, 19)
 for x in range(*fret_lims):
     ax.axvline(x, color="0.7", zorder=0)
 
@@ -99,7 +133,7 @@ for string, fret, finger in data[which]:
     if v0 is None:
         v0 = v
 
-    if v == v0:  # reset
+    if v % 12 == v0 % 12:  # reset
         n = 1
 
     color = "0.65" if v % 12 == v0 % 12 else "0.2"
