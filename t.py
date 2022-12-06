@@ -23,6 +23,7 @@ plt.rcParams.update(
 # %% Data
 
 data = {
+    # Pattern 1
     "C-a": [
         # string, fret, finger
         (5, 3, 2),
@@ -43,13 +44,18 @@ data = {
     ]
 }
 
-# C-d is just C-a in reverse
-data["C-d"] = data["C-a"][::-1]
+# Pattern 1 is also used for D, Db, Eb
+for tonic, delta in [("D", 2), ("Db", 1), ("Eb", 3)]:
+    data[f"{tonic}-a"] = [(string, fret + delta, finger) for string, fret, finger in data["C-a"]]
+
+# For Pattern 1, desc is just asc in reverse
+for tonic in ["C", "D", "Db", "Eb"]:
+    data[f"{tonic}-d"] = data[f"{tonic}-a"][::-1]
 
 
 # %% Plot
 
-which = "C-d"
+which = "D-d"
 
 assert which[-2:] in {"-a", "-d"}, "ascending or descending"
 ascending = which.endswith("-a")
@@ -110,7 +116,7 @@ for string, fret, finger in data[which]:
             [(x - s / 2, y - sgn * radius), (x, y + sgn * radius), (x + s / 2, y - sgn * radius)],
             closed=True,
             color=color,
-            **kwargs
+            **kwargs,
         )
     else:
         p = mpl.patches.Circle((x, y), radius=radius, color=color, **kwargs)
