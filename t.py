@@ -69,13 +69,30 @@ data = {
         (1, 16, 3),
         (1, 17, 4),
     ],
-    # "Am-d": [
-    #     # ...
-    #     (6, 10, 4),
-    #     (6, 8, 4),
-    #     (6, 7, 3),
-    #     (6, 5, 1),
-    # ],
+    "Am-d": [
+        (1, 17, 4),
+        (1, 15, 2),
+        (1, 13, 4),
+        (1, 12, 3),
+        (1, 10, 1),
+        (2, 13, 4),
+        (2, 12, 3),
+        (2, 10, 1),
+        (3, 12, 3),
+        (3, 10, 1),
+        (3, 9, 3),
+        (3, 7, 1),
+        (4, 10, 4),
+        (4, 9, 3),
+        (4, 7, 1),
+        (5, 10, 4),
+        (5, 8, 2),
+        (5, 7, 1),
+        (6, 10, 4),
+        (6, 8, 4),
+        (6, 7, 3),
+        (6, 5, 1),
+    ],
 }
 
 # Pattern 1 is also used for D, Db, Eb
@@ -86,10 +103,17 @@ for tonic, delta in [("D", 2), ("Db", 1), ("Eb", 3)]:
 for tonic in ["C", "D", "Db", "Eb"]:
     data[f"{tonic}-d"] = data[f"{tonic}-a"][::-1]
 
+# Pattern 2 is also used for F#, G#, F, G
+for tonic, delta in [("F#", -3), ("G#", -1), ("F", -4), ("G", -2)]:
+    data[f"{tonic}mm-a"] = [
+        (string, fret + delta, finger) for string, fret, finger in data["Amm-a"]
+    ]
+    data[f"{tonic}m-d"] = [(string, fret + delta, finger) for string, fret, finger in data["Am-d"]]
+
 
 # %% Plot
 
-which = "Amm-a"
+which = "Fmm-a"
 
 assert which[-2:] in {"-a", "-d"}, "ascending or descending"
 ascending = which.endswith("-a")
