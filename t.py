@@ -139,7 +139,8 @@ for x in range(*fret_lims):
         pass
 
 # Strings
-for y in range(1, 7):
+nstrings = 6
+for y in range(1, nstrings + 1):
     ax.axhline(y, c="silver", lw=1 + 0.4 * y, zorder=1)
 
 # Segovia
@@ -187,11 +188,22 @@ for string, fret, finger in data[which]:
     prev_finger = finger
     n += 1
 
+edge_space = 0.23
+d = 0.01
+ax.text(
+    fret_lims[-1] - d - edge_space,
+    nstrings - d,
+    which,
+    va="bottom",
+    ha="right",
+    size=18,
+    bbox=dict(facecolor="0.7", alpha=0.7),
+)
+
 ax.axis("scaled")
 
 ax.set_xlim(fret_lims)
-d = 0.23
-ax.set_ylim((6 + d, 1 - d))
+ax.set_ylim((6 + edge_space, 1 - edge_space))
 
 # Remove ax labels
 ax.xaxis.set_major_locator(plt.NullLocator())
