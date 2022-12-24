@@ -169,6 +169,30 @@ data = {
         (1, 11, 1),
         (1, 12, 2),
     ],
+    "Em-d": [
+        (1, 12, 2),
+        (1, 10, 4),
+        (1, 8, 2),
+        (1, 7, 1),
+        (2, 10, 4),
+        (2, 8, 2),
+        (2, 7, 1),
+        (3, 9, 3),
+        (3, 7, 1),
+        (4, 10, 4),
+        (4, 9, 3),
+        (4, 7, 1),
+        (5, 10, 4),
+        (5, 9, 3),
+        (5, 7, 1),
+        (5, 5, 4),
+        (5, 3, 2),
+        (5, 2, 1),
+        (6, 5, 4),
+        (6, 3, 2),
+        (6, 2, 1),
+        (6, 0, None),
+    ],
 }
 
 # Pattern 1 is also used for D, Db, Eb
@@ -194,7 +218,7 @@ for tonic, delta in [("A", 2), ("B", 4), ("F#", -1), ("Ab", 1), ("Bb", 3)]:
 
 # %% Plot
 
-which = "Emm-a"
+which = "Em-d"
 
 assert which[-2:] in {"-a", "-d"}, "ascending or descending"
 ascending = which.endswith("-a")
@@ -251,6 +275,7 @@ for string, fret, finger in data[which]:
         prev_string is not None
         and prev_finger is not None
         and string == prev_string
+        and finger is not None
         and (finger <= prev_finger if ascending else finger >= prev_finger)
     ):
         # Must have shifted
