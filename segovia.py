@@ -143,6 +143,32 @@ data = {
         (6, 5, 4),
         (6, 3, 2),
     ],
+    #
+    # Pattern 4
+    "Emm-a": [
+        (6, 0, None),
+        (6, 2, 1),
+        (6, 3, 2),
+        (6, 5, 4),
+        (5, 2, 1),
+        (5, 4, 3),
+        (5, 6, 3),
+        (5, 7, 4),
+        (4, 4, 1),
+        (4, 5, 2),
+        (4, 7, 4),
+        (4, 9, 2),
+        (4, 11, 4),
+        (3, 8, 1),
+        (3, 9, 2),
+        (3, 11, 4),
+        (2, 8, 1),
+        (2, 10, 3),
+        (2, 12, 2),
+        (2, 14, 4),
+        (1, 11, 1),
+        (1, 12, 2),
+    ],
 }
 
 # Pattern 1 is also used for D, Db, Eb
@@ -168,7 +194,7 @@ for tonic, delta in [("A", 2), ("B", 4), ("F#", -1), ("Ab", 1), ("Bb", 3)]:
 
 # %% Plot
 
-which = "Bb-a"
+which = "Emm-a"
 
 assert which[-2:] in {"-a", "-d"}, "ascending or descending"
 ascending = which.endswith("-a")
@@ -200,7 +226,7 @@ for y in range(1, nstrings + 1):
 
 # Segovia
 vals = [4, 11, 7, 2, 9, 4]
-radius = 0.4
+standard_radius = 0.4
 kwargs = dict(zorder=10, clip_on=False)
 prev_string = prev_finger = None
 v0 = None
@@ -216,6 +242,10 @@ for string, fret, finger in data[which]:
     if v % 12 == v0 % 12:  # reset
         n = 1
 
+    radius = standard_radius
+    if fret == 0:  # Open string
+        radius = standard_radius * 0.6
+        x = fret
     color = "0.65" if v % 12 == v0 % 12 else "0.2"
     if (
         prev_string is not None
@@ -237,7 +267,16 @@ for string, fret, finger in data[which]:
     ax.add_patch(p)
 
     ax.text(x, y, finger, ha="center", va="center", color="w", size=16, zorder=20)
-    ax.text(x, y + 0.3, n, ha="center", va="center", color="w", size=8, zorder=20)
+    ax.text(
+        x,
+        y + 0.3 * radius / standard_radius,
+        n,
+        ha="center",
+        va="center",
+        color="w",
+        size=8,
+        zorder=20,
+    )
 
     prev_string = string
     prev_finger = finger
