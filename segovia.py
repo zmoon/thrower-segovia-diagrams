@@ -1,7 +1,5 @@
 """
-Created on Mon Nov 28 18:56:27 2022
-
-@author: zmoon
+Fretboard diagrams for the Segovia Scales
 """
 import math
 
