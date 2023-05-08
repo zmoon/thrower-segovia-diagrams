@@ -191,6 +191,32 @@ data = {
         (6, 2, 1),
         (6, 0, None),
     ],
+    #
+    # Pattern 5
+    "Bmm-a": [
+        (5, 2, 1),
+        (5, 4, 3),
+        (5, 5, 4),
+        (4, 2, 1),
+        (4, 4, 3),
+        (4, 6, 1),
+        (4, 8, 3),
+        (4, 9, 1),
+        (4, 11, 3),
+        (4, 12, 4),
+        (3, 9, 1),
+        (3, 11, 3),
+        (2, 9, 1),
+        (2, 11, 3),
+        (2, 12, 1),
+        (2, 14, 3),
+        (2, 15, 4),
+        (1, 12, 1),
+        (1, 14, 3),
+        (1, 16, 1),
+        (1, 18, 3),
+        (1, 19, 4),
+    ],
 }
 
 # Pattern 1 is also used for D, Db, Eb
@@ -216,9 +242,9 @@ for tonic, delta in [("A", 2), ("B", 4), ("F#", -1), ("Ab", 1), ("Bb", 3)]:
 
 # %% Plot
 
-which = "Em-d"
+which = "Bmm-a"
 
-assert which[-2:] in {"-a", "-d"}, "ascending or descending"
+assert which[-2:] in {"-a", "-d"}, "[a]scending or [d]escending"
 ascending = which.endswith("-a")
 
 fig, ax = plt.subplots(figsize=(10, 3.2))
