@@ -263,10 +263,17 @@ for tonic, delta in [("A", 2), ("B", 4), ("F#", -1), ("Ab", 1), ("Bb", 3)]:
     data[f"{tonic}-a"] = [(string, fret + delta, finger) for string, fret, finger in data["G-a"]]
     data[f"{tonic}-d"] = [(string, fret + delta, finger) for string, fret, finger in data["G-d"]]
 
+# Pattern 5 is also used for Bb
+for tonic, delta in [("Bb", -1)]:
+    data[f"{tonic}mm-a"] = [
+        (string, fret + delta, finger) for string, fret, finger in data["Bmm-a"]
+    ]
+    data[f"{tonic}m-d"] = [(string, fret + delta, finger) for string, fret, finger in data["Bm-d"]]
+
 
 # %% Plot
 
-which = "Bm-d"
+which = "Bbm-d"
 
 assert which[-2:] in {"-a", "-d"}, "[a]scending or [d]escending"
 ascending = which.endswith("-a")
