@@ -304,7 +304,7 @@ for y in range(1, nstrings + 1):
     ax.axhline(y, c="silver", lw=1 + 0.4 * y, zorder=1)
 
 # Segovia
-vals = [4, 11, 7, 2, 9, 4]
+vals = [4, 11, 7, 2, 9, 4]  # pitch class value wrt. C, string 1 (high E) to string 6 (low E)
 standard_radius = 0.4
 kwargs = dict(zorder=10, clip_on=False)
 prev_string = prev_finger = None
