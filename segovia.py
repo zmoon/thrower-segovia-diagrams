@@ -291,6 +291,8 @@ data = {
         (6, 2, 1),
         (6, 0, None),
     ],
+    #
+    # Pattern 7
     "C#mm-a": [
         (5, 4, 1),
         (5, 6, 3),
@@ -324,6 +326,32 @@ data = {
         (5, 7, 4),
         (5, 6, 3),
         (5, 4, 1),
+    ],
+    #
+    # Pattern 8
+    "F-a": [
+        (6, 1, 1),
+        (6, 3, 3),
+        (5, 0, None),
+        (5, 1, 1),
+        (5, 3, 3),
+        (5, 5, 1),
+        (5, 7, 3),
+        (5, 8, 4),
+        (4, 5, 1),
+        (4, 7, 3),
+        (4, 8, 4),
+        (3, 5, 1),
+        (3, 7, 3),
+        (2, 5, 1),
+        (2, 6, 2),
+        (2, 8, 4),
+        (1, 5, 1),
+        (1, 6, 2),
+        (1, 8, 4),
+        (1, 10, 1),
+        (1, 12, 3),
+        (1, 13, 4),
     ],
 }
 
@@ -361,10 +389,16 @@ for tonic, delta in [("D#", 2), ("C", -1), ("D", 1)]:
     ]
     data[f"{tonic}m-d"] = [(string, fret + delta, finger) for string, fret, finger in data["C#m-d"]]
 
+# Pattern 8 desc is just asc in reverse
+for tonic in ["F"]:
+    data[f"{tonic}-d"] = data[f"{tonic}-a"][::-1]
+
+assert len(data) == 48, "major/minor, asc/dec (12 * 2 * 2 = 48)"
+
 
 # %% Plot
 
-which = "Dm-d"
+which = "F-d"
 
 assert which[-2:] in {"-a", "-d"}, "[a]scending or [d]escending"
 ascending = which.endswith("-a")
