@@ -291,6 +291,23 @@ data = {
         (6, 2, 1),
         (6, 0, None),
     ],
+    "C#mm-a": [
+        (5, 4, 1),
+        (5, 6, 3),
+        (5, 7, 4),
+        (4, 4, 1),
+        (4, 6, 3),
+        (4, 8, 1),
+        (4, 10, 3),
+        (4, 11, 4),
+        (3, 8, 1),
+        (3, 9, 2),
+        (3, 11, 4),
+        (2, 9, 2),
+        (2, 11, 4),
+        (1, 8, 1),
+        (1, 9, 2),
+    ],
 }
 
 # Pattern 1 is also used for D, Db, Eb
@@ -323,7 +340,7 @@ for tonic, delta in [("Bb", -1)]:
 
 # %% Plot
 
-which = "E-d"
+which = "C#mm-a"
 
 assert which[-2:] in {"-a", "-d"}, "[a]scending or [d]escending"
 ascending = which.endswith("-a")
