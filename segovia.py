@@ -626,6 +626,6 @@ if __name__ == "__main__":
 
     fig.get_layout_engine().set(w_pad=4 / 72, wspace=0.2)
 
-    fig.savefig("all-patterns.svg", bbox_inches="tight", pad_inches=0, transparent=True)
+    fig.savefig("all-patterns.svg", bbox_inches="tight", pad_inches=0.05, transparent=True)
 
     plt.show()
