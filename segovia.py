@@ -402,6 +402,7 @@ def plot_scale(
     ax=None,
     finger_label_size=16,
     cell_aspect=1.0,
+    edge_space=0.23,
     show_which=True,
 ):
     import math
@@ -529,7 +530,6 @@ def plot_scale(
         prev_finger = finger
         n += 1
 
-    edge_space = 0.23
     d = 0.01
     if show_which:
         ax.text(
@@ -568,8 +568,6 @@ if __name__ == "__main__":
         }
     )
 
-    # import matplotlib as mpl; mpl.use("agg")
-
     cases = [
         # scale key, ax title
         ("C-a", "Pattern 1 -- C, D, Db, Eb\nAscending"),
@@ -595,11 +593,19 @@ if __name__ == "__main__":
     fig, axs = plt.subplots(len(cases) // 2, 2, figsize=(6.8, 8.85), constrained_layout=True)
 
     for (which, title), ax in zip(cases, axs.flat):
-        plot_scale(which, ax=ax, finger_label_size=8, cell_aspect=0.9, show_which=False)
+        plot_scale(
+            which,
+            ax=ax,
+            finger_label_size=8,
+            cell_aspect=0.88,
+            edge_space=0,
+            show_which=False,
+        )
         title_ = title.replace("--", "\u2013").replace("#", "\u266f").replace("b", "\u266d")
         ax.set_title(title_)
 
     fig.get_layout_engine().set(w_pad=4 / 72, wspace=0.2)
 
-    # fig.savefig("all-patterns.png")
+    fig.savefig("all-patterns.svg", bbox_inches="tight", pad_inches=0, transparent=True)
+
     plt.show()
