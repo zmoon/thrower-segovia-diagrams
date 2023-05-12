@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Segovia Scales' Diagrams</title>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2023.03.1/pyscript.css" />
+  <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
+</head>
+<body>
+  <!-- Below method worked in the alpha pyscript but not the release -->
+  <!-- <py-env>
+    - matplotlib
+    - paths:
+      - segovia.py
+  </py-env> -->
+
+  <py-config type="toml">
+    packages = ["numpy", "matplotlib"]
+    [[fetch]]
+    files = ["./segovia.py"]
+  </py-config>
+
+  <py-script>
+import io
+
+import matplotlib.pyplot as plt
+import segovia
+
+class S:
+    """Class to get `display` to recognize string as raw SVG data."""
+    def __init__(self, svg: str):
+        self.svg = svg
+
+    def _repr_svg_(self):
+        return self.svg
+
+segovia.plot_scale("C-a")
+fig = plt.gcf()
+
+with io.StringIO() as f:
+    fig.savefig(f, format="svg", bbox_inches="tight", pad_inches=0.05)
+    svg = f.getvalue()
+
+display(S(svg))
+  </py-script>
+
+</body>
+</html>
