@@ -396,6 +396,27 @@ def load_data():
     return data
 
 
+def _sort_scale_key_key(s):
+    import re
+
+    m = re.fullmatch(r"([A-G])([#b]?)(m{,2}?)\-([ad])", s)
+    if m is None:
+        raise ValueError(f"Bad scale key: {s!r}")
+
+    nat, acc, minor, asc_desc = m.groups()
+
+    iacc = 0
+    if acc:
+        iacc = "#b".index(acc) + 1
+
+    return (
+        "CDEFGAB".index(nat),
+        iacc,
+        1 if minor else 0,
+        1 if asc_desc == "d" else 0,
+    )
+
+
 def plot_scale(
     which,
     *,
@@ -414,10 +435,9 @@ def plot_scale(
     if which not in data:
         raise ValueError(
             f"Unrecognized scale: {which}. "
-            f"Valid options are: {', '.join(sorted(data))}. "  # TODO: nicer sort, starting with C, then like the example
-            "-a for ascending, -d for descending, "
-            "m for minor (only descending), mm for melodies minor (only ascending), "
-            "e.g. for tonic C we have C-a, C-d, Cmm-a, Cm-d."
+            f"Valid options are: {', '.join(sorted(data, key=_sort_scale_key_key))}. "
+            "That is, -a for ascending, -d for descending, "
+            "m for minor (only descending), mm for melodies minor (only ascending)."
         )
 
     if cell_aspect > 1:
