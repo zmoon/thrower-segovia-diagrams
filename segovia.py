@@ -396,7 +396,14 @@ def load_data():
     return data
 
 
-def plot_scale(which, *, ax=None):
+def plot_scale(
+    which,
+    *,
+    ax=None,
+    finger_label_size=16,
+    cell_aspect=1.0,
+    show_which=True,
+):
     import math
 
     import matplotlib as mpl
@@ -488,7 +495,16 @@ def plot_scale(which, *, ax=None):
             p = mpl.patches.Circle((x, y), radius=radius, color=color, **kwargs)
         ax.add_patch(p)
 
-        ax.text(x, y, finger, ha="center", va="center", color="w", size=16, zorder=20)
+        ax.text(
+            x,
+            y,
+            finger,
+            ha="center",
+            va="center",
+            color="w",
+            size=finger_label_size,
+            zorder=20,
+        )
         ax.text(
             x,
             y + 0.3 * radius / standard_radius,
@@ -496,7 +512,7 @@ def plot_scale(which, *, ax=None):
             ha="center",
             va="center",
             color="w",
-            size=8,
+            size=finger_label_size // 2,
             zorder=20,
         )
 
@@ -506,17 +522,19 @@ def plot_scale(which, *, ax=None):
 
     edge_space = 0.23
     d = 0.01
-    ax.text(
-        fret_lims[-1] - d - edge_space,
-        nstrings - d,
-        which,
-        va="bottom",
-        ha="right",
-        size=18,
-        bbox=dict(facecolor="0.7", alpha=0.7),
-    )
+    if show_which:
+        ax.text(
+            fret_lims[-1] - d - edge_space,
+            nstrings - d,
+            which,
+            va="bottom",
+            ha="right",
+            size=int(1.125 * finger_label_size),
+            bbox=dict(facecolor="0.7", alpha=0.7),
+        )
 
     ax.axis("scaled")
+    ax.set_aspect(cell_aspect)  # TODO: need to adjust shapes as well e.g. to keep circular
 
     ax.set_xlim(fret_lims)
     ax.set_ylim((6 + edge_space, 1 - edge_space))
@@ -568,9 +586,11 @@ if __name__ == "__main__":
     fig, axs = plt.subplots(len(cases) // 2, 2, figsize=(6.8, 8.85), constrained_layout=True)
 
     for (which, title), ax in zip(cases, axs.flat):
-        plot_scale(which, ax=ax)
+        plot_scale(which, ax=ax, finger_label_size=8, cell_aspect=0.9, show_which=False)
         title_ = title.replace("--", "\u2013").replace("#", "\u266f").replace("b", "\u266d")
         ax.set_title(title_)
+
+    fig.get_layout_engine().set(w_pad=4 / 72, wspace=0.2)
 
     # fig.savefig("all-patterns.png")
     plt.show()
