@@ -537,9 +537,40 @@ if __name__ == "__main__":
             "figure.autolayout": True,
             "axes.formatter.limits": (-3, 4),  # scilimits
             "axes.formatter.use_mathtext": True,
+            "axes.titlesize": 8,
         }
     )
 
-    plot_scale("F-d")
+    # import matplotlib as mpl; mpl.use("agg")
 
+    cases = [
+        # scale key, ax title
+        ("C-a", "Pattern 1 -- C, D, Db, Eb\nAscending"),
+        ("Amm-a", "Pattern 2 -- Am, F#m, G#m, Fm, Gm\nAscending"),
+        ("C-d", "Descending"),
+        ("Am-d", "Descending"),
+        ("G-a", "\nPattern 3 -- G, A, B, F#, Ab, Bb\nAscending"),
+        ("Emm-a", "\nPattern 4 -- Em\nAscending"),
+        ("G-d", "Descending"),
+        ("Em-d", "Descending"),
+        ("Bmm-a", "\nPattern 5 -- Bm, Bbm\nAscending"),
+        ("E-a", "\nPattern 6 -- E\nAscending"),
+        ("Bm-d", "Descending"),
+        ("E-d", "Descending"),
+        ("C#mm-a", "\nPattern 7 -- C#m, D#m, Cm, Dm\nAscending"),
+        ("F-a", "\nPattern 8 -- F\nAscending"),
+        ("C#m-d", "Descending"),
+        ("F-d", "Descending"),
+    ]
+
+    assert len(cases) == 16
+    assert len(cases) % 2 == 0
+    fig, axs = plt.subplots(len(cases) // 2, 2, figsize=(6.8, 8.85), constrained_layout=True)
+
+    for (which, title), ax in zip(cases, axs.flat):
+        plot_scale(which, ax=ax)
+        title_ = title.replace("--", "\u2013").replace("#", "\u266f").replace("b", "\u266d")
+        ax.set_title(title_)
+
+    # fig.savefig("all-patterns.png")
     plt.show()
