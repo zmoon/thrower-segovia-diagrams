@@ -419,11 +419,14 @@ def plot_scale(
             "e.g. for tonic C we have C-a, C-d, Cmm-a, Cm-d."
         )
 
+    if cell_aspect > 1:
+        raise ValueError("cell_aspect (y/x for fretboard grid cells) > 1 not supported")
+
     assert which[-2:] in {"-a", "-d"}, "[a]scending or [d]escending"
     ascending = which.endswith("-a")
 
     if ax is None:
-        _, ax = plt.subplots(figsize=(10, 3.2))
+        _, ax = plt.subplots(figsize=(10 / cell_aspect, 3.2))
 
     # Frets
     fret_lims = (0, 19)
@@ -431,14 +434,14 @@ def plot_scale(
         ax.axvline(x, color="0.7", zorder=0)
 
     # Markers
-    kwargs = dict(radius=0.2, color="0.8")
+    kwargs = dict(width=0.4 * cell_aspect, height=0.4, color="0.8")
     for x in range(*fret_lims):
         if x in {3, 5, 7, 9, 15, 17, 19}:
-            p = mpl.patches.Circle((x - 0.5, 3.5), **kwargs)
+            p = mpl.patches.Ellipse((x - 0.5, 3.5), **kwargs)
             ax.add_patch(p)
         elif x == 12:
             for y in [2.5, 4.5]:
-                p = mpl.patches.Circle((x - 0.5, y), **kwargs)
+                p = mpl.patches.Ellipse((x - 0.5, y), **kwargs)
                 ax.add_patch(p)
         else:
             pass
@@ -479,7 +482,7 @@ def plot_scale(
             and (finger <= prev_finger if ascending else finger >= prev_finger)
         ):
             # Must have shifted
-            s = 2 / math.sqrt(3) * radius * 2 * 0.9
+            s = 2 / math.sqrt(3) * radius * 2 * 0.9 * cell_aspect
             sgn = -1  # +1 for pointing down
             p = mpl.patches.Polygon(
                 [
@@ -492,7 +495,13 @@ def plot_scale(
                 **kwargs,
             )
         else:
-            p = mpl.patches.Circle((x, y), radius=radius, color=color, **kwargs)
+            p = mpl.patches.Ellipse(
+                (x, y),
+                width=2 * radius * cell_aspect,
+                height=2 * radius,
+                color=color,
+                **kwargs,
+            )
         ax.add_patch(p)
 
         ax.text(
@@ -534,7 +543,7 @@ def plot_scale(
         )
 
     ax.axis("scaled")
-    ax.set_aspect(cell_aspect)  # TODO: need to adjust shapes as well e.g. to keep circular
+    ax.set_aspect(cell_aspect)
 
     ax.set_xlim(fret_lims)
     ax.set_ylim((6 + edge_space, 1 - edge_space))
