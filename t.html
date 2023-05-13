@@ -8,26 +8,37 @@
   <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
 </head>
 <body>
-  <!-- Below method worked in the alpha pyscript but not the release -->
-  <!-- <py-env>
-    - matplotlib
-    - paths:
-      - segovia.py
-  </py-env> -->
-
   <py-config type="toml">
     packages = ["numpy", "matplotlib"]
+
+    # For local development (need to run HTTP server):
+    # [[fetch]]
+    # files = ["./segovia.py"]
+
+    # For production:
     [[fetch]]
-    files = ["./segovia.py"]
+    from = "https://raw.githubusercontent.com/zmoon/thrower-segovia-diagrams/main/"
+    files = ["segovia.py"]
   </py-config>
+
+  <!-- TODO: provide valid options with `list` attr -->
+  <input type="text" maxlength="6" size="6" id="scale-input" class="py-input"/>
+  <button id="submit-button" type="submit" py-click="display_scale_svg()" class="py-button">Go</button>
+  <div id="scale-diagram" style="color: red;"></div>
+
+  <div style="font-size: smaller;">
+    Segovia Scales diagrams with Matplotlib.
+    <a href="https://github.com/zmoon/thrower-segovia-diagrams">Source</a>.
+  </div>
 
   <py-script>
 import io
 
 import matplotlib.pyplot as plt
 import segovia
+from js import console
 
-class S:
+class SVG:
     """Class to get `display` to recognize string as raw SVG data."""
     def __init__(self, svg: str):
         self.svg = svg
@@ -35,15 +46,48 @@ class S:
     def _repr_svg_(self):
         return self.svg
 
-segovia.plot_scale("C-a")
-fig = plt.gcf()
+class HTML:
+    """Class to get `display` to recognize string as HTML."""
+    def __init__(self, html: str):
+        self.html = html
 
-with io.StringIO() as f:
-    fig.savefig(f, format="svg", bbox_inches="tight", pad_inches=0.05)
-    svg = f.getvalue()
+    def _repr_html_(self):
+        return self.html
 
-display(S(svg))
+def display_scale_svg():
+    scale = Element("scale-input").element.value.strip()
+
+    console.log(f"scale input: {scale!r}")
+
+    try:
+        segovia.plot_scale(scale)
+    except Exception as e:
+        display(e, target="scale-diagram", append=False)
+        return
+
+    fig = plt.gcf()
+    with io.StringIO() as f:
+        fig.savefig(f, format="svg", bbox_inches="tight", pad_inches=0.05)
+        svg = f.getvalue()
+
+    display(SVG(svg), target="scale-diagram", append=False)
+
+# Start with C-a
+Element("scale-input").element.value = "C-a"
+display_scale_svg()
   </py-script>
+
+  <script>
+// Submit scale text input on Enter keypress
+var input = document.getElementById("scale-input");
+
+input.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    document.getElementById("submit-button").click();
+  }
+});
+  </script>
 
 </body>
 </html>
