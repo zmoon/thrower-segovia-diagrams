@@ -1,42 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Segovia Scales' Diagrams</title>
-  <link rel="stylesheet" href="https://pyscript.net/releases/2023.03.1/pyscript.css" />
-  <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
-</head>
-<body>
-  <py-config type="toml">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Segovia Scales' Diagrams</title>
+    <link
+      rel="stylesheet"
+      href="https://pyscript.net/releases/2023.03.1/pyscript.css"
+    />
+    <script
+      defer
+      src="https://pyscript.net/releases/2023.03.1/pyscript.js"
+    ></script>
+  </head>
+  <body>
+    <!-- prettier-ignore -->
+    <py-config type="toml">
     packages = ["numpy", "matplotlib"]
 
     # For local development (need to run HTTP server):
     # [[fetch]]
     # files = ["./segovia.py"]
 
-    # For production:
+    # Load from GitHub:
     [[fetch]]
     from = "https://raw.githubusercontent.com/zmoon/thrower-segovia-diagrams/main/"
     files = ["segovia.py"]
-  </py-config>
+    </py-config>
 
-  <!-- TODO: provide valid options with `list` attr -->
-  <input type="text" maxlength="6" size="6" id="scale-input" class="py-input"/>
-  <button id="submit-button" type="submit" py-click="display_scale_svg()" class="py-button">Go</button>
-  <div id="scale-diagram" style="color: red;"></div>
+    <label for="scale-input">Scale:</label>
+    <input
+      type="text"
+      maxlength="6"
+      size="7"
+      id="scale-input"
+      class="py-input"
+      list="scale-choices"
+      spellcheck="false"
+    />
+    <datalist id="scale-choices"></datalist>
+    <button
+      id="submit-button"
+      type="submit"
+      py-click="display_scale_svg()"
+      class="py-button"
+    >
+      Go
+    </button>
+    <div id="scale-diagram" style="color: red"></div>
 
-  <div style="font-size: smaller;">
-    Segovia Scales'
-    <a href="https://seanthrower.com/new-segovia-scales-book/">diagrams</a>
-    with
-    <a href="https://matplotlib.org/">Matplotlib</a>,
-    in the browser with
-    <a href="https://pyscript.net/">PyScript</a>.
-    <a href="https://github.com/zmoon/thrower-segovia-diagrams">Source</a>.
-  </div>
+    <div style="font-size: smaller">
+      Segovia Scales'
+      <a href="https://seanthrower.com/new-segovia-scales-book/">diagrams</a>
+      with
+      <a href="https://matplotlib.org/">Matplotlib</a>, in the browser with
+      <a href="https://pyscript.net/">PyScript</a>.
+      <a href="https://github.com/zmoon/thrower-segovia-diagrams">Source</a>.
+    </div>
 
-  <py-script>
+    <!-- prettier-ignore -->
+    <py-script>
 import io
 
 import matplotlib.pyplot as plt
@@ -77,22 +100,41 @@ def display_scale_svg():
 
     display(SVG(svg), target="scale-diagram", append=False)
 
+# Get scale key choices
+scale_choices = sorted(segovia.load_data(), key=segovia._sort_scale_key_key)
+
+# Populate scale choices datalist
+from js import _addScaleOptions; _addScaleOptions()
+
 # Start with C-a
 Element("scale-input").element.value = "C-a"
 display_scale_svg()
-  </py-script>
+    </py-script>
 
-  <script>
-// Submit scale text input on Enter keypress
-var input = document.getElementById("scale-input");
+    <script>
+      function _addScaleOptions() {
+        // Populate scale choices datalist
+        var scale_choices = pyscript.interpreter.globals.get("scale_choices");
 
-input.addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    document.getElementById("submit-button").click();
-  }
-});
-  </script>
+        var scale_choices_datalist = document.getElementById("scale-choices");
+        for (var i = 0; i < scale_choices.length; i++) {
+          var option = document.createElement("option");
+          option.value = scale_choices.get(i);
+          scale_choices_datalist.appendChild(option);
+        }
+      }
+    </script>
 
-</body>
+    <script>
+      // Submit scale text input on Enter keypress
+      var input = document.getElementById("scale-input");
+
+      input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("submit-button").click();
+        }
+      });
+    </script>
+  </body>
 </html>
