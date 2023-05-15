@@ -437,7 +437,7 @@ def plot_scale(
             f"Unrecognized scale: {which}. "
             f"Valid options are: {', '.join(sorted(data, key=_sort_scale_key_key))}. "
             "That is, -a for ascending, -d for descending, "
-            "m for minor (only descending), mm for melodies minor (only ascending)."
+            "m for minor (only descending), mm for melodic minor (only ascending)."
         )
 
     if cell_aspect > 1:
