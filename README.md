@@ -6,4 +6,4 @@ Remaking [Sean Thrower's Segovia Scales diagrams](https://seanthrower.com/new-se
 
 [PyScript app](https://raw.githack.com/zmoon/thrower-segovia-diagrams/main/t.html) (WIP)
 
-![All scale patterns](https://github.com/zmoon/thrower-segovia-diagrams/assets/15079414/e69e327f-5fd1-49c3-b29a-1d43efd35ff2)
+![All scale patterns](https://raw.githubusercontent.com/zmoon/thrower-segovia-diagrams/rendered/all-patterns.svg)
