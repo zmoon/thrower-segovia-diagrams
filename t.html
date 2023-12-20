@@ -86,6 +86,8 @@ from pyweb.pydom import Element
 
 import segovia
 
+scale_input = Element(document.getElementById("scale-input"))
+
 class SVG:
     """Class to get `display` to recognize string as raw SVG data."""
     def __init__(self, svg: str):
@@ -103,7 +105,7 @@ class HTML:
         return self.html
 
 def display_scale_svg(event=None):
-    scale = Element(document.getElementById("scale-input")).value.strip()
+    scale = scale_input.value.strip()
 
     console.log(f"scale input: {scale!r}")
 
@@ -130,7 +132,7 @@ for scale in scale_choices:
     option.value = scale
 
 # Start with C-a
-Element(document.getElementById("scale-input")).value = "C-a"
+scale_input.value = "C-a"
 display_scale_svg()
     </script>
 
