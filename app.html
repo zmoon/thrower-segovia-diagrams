@@ -6,12 +6,25 @@
     <title>Segovia Scales' Diagrams</title>
     <link
       rel="stylesheet"
-      href="https://pyscript.net/releases/2023.03.1/pyscript.css"
+      href="https://pyscript.net/releases/2023.12.1/core.css"
     />
     <script
-      defer
-      src="https://pyscript.net/releases/2023.03.1/pyscript.js"
+      type="module"
+      src="https://pyscript.net/releases/2023.12.1/core.js"
     ></script>
+
+    <style>
+      #loading {
+        outline: none;
+        border: none;
+        background: transparent;
+      }
+    </style>
+    <script type="module">
+      const loading = document.getElementById("loading");
+      addEventListener("py:ready", () => loading.close());
+      loading.showModal();
+    </script>
   </head>
   <body>
     <!-- prettier-ignore -->
@@ -28,6 +41,10 @@
     files = ["segovia.py"]
     </py-config>
 
+    <dialog id="loading">
+      <h1>Loading...</h1>
+    </dialog>
+
     <label for="scale-input">Scale:</label>
     <input
       type="text"
@@ -42,7 +59,7 @@
     <button
       id="submit-button"
       type="submit"
-      py-click="display_scale_svg()"
+      py-click="display_scale_svg"
       class="py-button"
     >
       Go
@@ -59,12 +76,17 @@
     </div>
 
     <!-- prettier-ignore -->
-    <py-script>
+    <script type="py">
 import io
 
 import matplotlib.pyplot as plt
-import segovia
 from js import console
+from pyscript import display, document
+from pyweb.pydom import Element
+
+import segovia
+
+scale_input = document.getElementById("scale-input")
 
 class SVG:
     """Class to get `display` to recognize string as raw SVG data."""
@@ -82,8 +104,8 @@ class HTML:
     def _repr_html_(self):
         return self.html
 
-def display_scale_svg():
-    scale = Element("scale-input").element.value.strip()
+def display_scale_svg(event=None):
+    scale = scale_input.value.strip()
 
     console.log(f"scale input: {scale!r}")
 
@@ -104,25 +126,14 @@ def display_scale_svg():
 scale_choices = sorted(segovia.load_data(), key=segovia._sort_scale_key_key)
 
 # Populate scale choices datalist
-from js import _addScaleOptions; _addScaleOptions()
+datalist = Element(document.getElementById("scale-choices"))
+for scale in scale_choices:
+    option = datalist.create("option", is_child=True)
+    option.value = scale
 
 # Start with C-a
-Element("scale-input").element.value = "C-a"
+scale_input.value = "C-a"
 display_scale_svg()
-    </py-script>
-
-    <script>
-      function _addScaleOptions() {
-        // Populate scale choices datalist
-        var scale_choices = pyscript.interpreter.globals.get("scale_choices");
-
-        var scale_choices_datalist = document.getElementById("scale-choices");
-        for (var i = 0; i < scale_choices.length; i++) {
-          var option = document.createElement("option");
-          option.value = scale_choices.get(i);
-          scale_choices_datalist.appendChild(option);
-        }
-      }
     </script>
 
     <script>
