@@ -2,6 +2,7 @@
 Fretboard diagrams for the Segovia Scales
 """
 from functools import lru_cache
+from typing import NamedTuple
 
 
 @lru_cache(1)
@@ -396,14 +397,46 @@ def load_data():
     return data
 
 
-def _sort_scale_key_key(s):
+class ParsedScaleKey(NamedTuple):
+    root: str
+    major: bool
+    ascending: bool
+
+    def to_string(self):
+        s_asc = "a" if self.ascending else "d"
+        s_min = ""
+        if not self.major:
+            s_min += "m"
+            if self.ascending:
+                s_min += "m"
+        return f"{self.root}{s_min}-{s_asc}"
+
+    @property
+    def nat_acc(self):
+        return self.root[0], self.root[1:]
+
+
+def parse_scale_key(s):
     import re
 
-    m = re.fullmatch(r"([A-G])([#b]?)(m{,2}?)\-([ad])", s)
+    rx = r"([A-G])([#b]?)(m{,2}?)\-([ad])"
+    m = re.fullmatch(rx, s)
     if m is None:
-        raise ValueError(f"Bad scale key: {s!r}")
+        raise ValueError(f"Bad scale key: {s!r}. Should match {rx!r}, e.g. 'C-a', 'Bbmm-a'.")
 
     nat, acc, minor, asc_desc = m.groups()
+
+    root = nat + acc
+    major = minor == ""
+    ascending = asc_desc == "a"
+
+    return ParsedScaleKey(root, major, ascending)
+
+
+def _sort_scale_key_key(s):
+    k = parse_scale_key(s)
+
+    nat, acc = k.nat_acc
 
     iacc = 0
     if acc:
@@ -412,8 +445,8 @@ def _sort_scale_key_key(s):
     return (
         "CDEFGAB".index(nat),
         iacc,
-        1 if minor else 0,
-        1 if asc_desc == "d" else 0,
+        1 if not k.major else 0,
+        1 if not k.ascending else 0,
     )
 
 
