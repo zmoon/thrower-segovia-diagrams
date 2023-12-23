@@ -414,13 +414,35 @@ class NatAcc(NamedTuple):
 
         return cls(nat, acc)
 
+    @lru_cache(1)
+    def unparse(self):
+        return self.nat + self.acc
 
-class ParsedScaleKey(NamedTuple):
+
+class ScaleKey(NamedTuple):
     root: str
     major: bool
     ascending: bool
 
-    def to_string(self):
+    @classmethod
+    def parse(cls, s):
+        import re
+
+        rx = r"([A-G])([#b]?)(m{,2}?)\-([ad])"
+        m = re.fullmatch(rx, s)
+        if m is None:
+            raise ValueError(f"Bad scale key: {s!r}. Should match {rx!r}, e.g. 'C-a', 'Bbmm-a'.")
+
+        nat, acc, minor, asc_desc = m.groups()
+
+        root = nat + acc
+        major = minor == ""
+        ascending = asc_desc == "a"
+
+        return cls(root, major, ascending)
+
+    @lru_cache(1)
+    def unparse(self):
         s_asc = "a" if self.ascending else "d"
         s_min = ""
         if not self.major:
@@ -434,39 +456,25 @@ class ParsedScaleKey(NamedTuple):
     def nat_acc(self):
         return NatAcc.parse(self.root)
 
+    @property
+    @lru_cache(1)
+    def sort_key(self):
+        nat, acc = self.nat_acc
 
-def parse_scale_key(s):
-    import re
+        iacc = 0
+        if acc:
+            iacc = "#b".index(acc) + 1
 
-    rx = r"([A-G])([#b]?)(m{,2}?)\-([ad])"
-    m = re.fullmatch(rx, s)
-    if m is None:
-        raise ValueError(f"Bad scale key: {s!r}. Should match {rx!r}, e.g. 'C-a', 'Bbmm-a'.")
-
-    nat, acc, minor, asc_desc = m.groups()
-
-    root = nat + acc
-    major = minor == ""
-    ascending = asc_desc == "a"
-
-    return ParsedScaleKey(root, major, ascending)
+        return (
+            "CDEFGAB".index(nat),  # C first
+            iacc,  # nat first, then sharp, then flat
+            0 if self.major else 1,  # major before minor
+            0 if self.ascending else 1,  # ascending before descending
+        )
 
 
 def _sort_scale_key_key(s):
-    k = parse_scale_key(s)
-
-    nat, acc = k.nat_acc
-
-    iacc = 0
-    if acc:
-        iacc = "#b".index(acc) + 1
-
-    return (
-        "CDEFGAB".index(nat),
-        iacc,
-        1 if not k.major else 0,
-        1 if not k.ascending else 0,
-    )
+    return ScaleKey.parse(s).sort_key
 
 
 def plot_scale(
@@ -486,7 +494,7 @@ def plot_scale(
     data = load_data()
     if which not in data:
         raise ValueError(
-            f"Unrecognized scale: {which}. "
+            f"Unrecognized scale: {which!r}. "
             f"Valid options are: {', '.join(sorted(data, key=_sort_scale_key_key))}. "
             "That is, -a for ascending, -d for descending, "
             "m for minor (only descending), mm for melodic minor (only ascending)."
@@ -656,7 +664,7 @@ def plot_scale_ad(which, *, fig=None, **kwargs):
 
     if which not in allowed_which:
         raise ValueError(
-            f"Invalid scale: {which}. "
+            f"Invalid scale: {which!r}. "
             f"Valid options for ascending + descending plot are: {allowed_which}"
         )
 
