@@ -397,6 +397,24 @@ def load_data():
     return data
 
 
+class NatAcc(NamedTuple):
+    nat: str
+    acc: str
+
+    @classmethod
+    def parse(cls, s):
+        import re
+
+        rx = r"([A-G])([#b]?)"
+        m = re.fullmatch(rx, s)
+        if m is None:
+            raise ValueError(f"Bad pitch class: {s!r}. Should match {rx!r}.")
+
+        nat, acc = m.groups()
+
+        return cls(nat, acc)
+
+
 class ParsedScaleKey(NamedTuple):
     root: str
     major: bool
@@ -412,8 +430,9 @@ class ParsedScaleKey(NamedTuple):
         return f"{self.root}{s_min}-{s_asc}"
 
     @property
+    @lru_cache(1)
     def nat_acc(self):
-        return self.root[0], self.root[1:]
+        return NatAcc.parse(self.root)
 
 
 def parse_scale_key(s):
@@ -606,6 +625,60 @@ def plot_scale(
     ax.yaxis.set_major_locator(plt.NullLocator())
 
 
+def plot_scale_ad(which, *, fig=None, **kwargs):
+    """Plot both the ascending and descending versions of a scale on two axes."""
+    allowed_which = [
+        "C",
+        "C#m",
+        "Cm",
+        "D",
+        "D#m",
+        "Db",
+        "Dm",
+        "E",
+        "Eb",
+        "Em",
+        "F",
+        "F#",
+        "F#m",
+        "Fm",
+        "G",
+        "G#m",
+        "Gm",
+        "A",
+        "Ab",
+        "Am",
+        "B",
+        "Bb",
+        "Bbm",
+        "Bm",
+    ]
+
+    if which not in allowed_which:
+        raise ValueError(
+            f"Invalid scale: {which}. "
+            f"Valid options for ascending + descending plot are: {allowed_which}"
+        )
+
+    cell_aspect = kwargs.pop("cell_aspect", 1.0)
+    if "ax" in kwargs:
+        del kwargs["ax"]
+
+    if fig is None:
+        fig, (ax_a, ax_d) = plt.subplots(2, 1, figsize=(10 / cell_aspect, 3.2 * 2))
+    else:
+        ax_a, ax_d = fig.get_axes()[:2]
+
+    if which.endswith("m"):
+        key_a = f"{which}m-a"
+    else:
+        key_a = f"{which}-a"
+    key_d = f"{which}-d"
+
+    plot_scale(key_a, ax=ax_a, **kwargs)
+    plot_scale(key_d, ax=ax_d, **kwargs)
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
@@ -621,42 +694,45 @@ if __name__ == "__main__":
         }
     )
 
-    cases = [
-        # scale key, ax title
-        ("C-a", "Pattern 1 -- C, D, Db, Eb\nAscending"),
-        ("Amm-a", "Pattern 2 -- Am, F#m, G#m, Fm, Gm\nAscending"),
-        ("C-d", "Descending"),
-        ("Am-d", "Descending"),
-        ("G-a", "\nPattern 3 -- G, A, B, F#, Ab, Bb\nAscending"),
-        ("Emm-a", "\nPattern 4 -- Em\nAscending"),
-        ("G-d", "Descending"),
-        ("Em-d", "Descending"),
-        ("Bmm-a", "\nPattern 5 -- Bm, Bbm\nAscending"),
-        ("E-a", "\nPattern 6 -- E\nAscending"),
-        ("Bm-d", "Descending"),
-        ("E-d", "Descending"),
-        ("C#mm-a", "\nPattern 7 -- C#m, D#m, Cm, Dm\nAscending"),
-        ("F-a", "\nPattern 8 -- F\nAscending"),
-        ("C#m-d", "Descending"),
-        ("F-d", "Descending"),
-    ]
+    plot_scale_ad("Db")
+    plt.show()
 
-    assert len(cases) == 16
-    assert len(cases) % 2 == 0
-    fig, axs = plt.subplots(len(cases) // 2, 2, figsize=(6.8, 8.85), constrained_layout=True)
+    # cases = [
+    #     # scale key, ax title
+    #     ("C-a", "Pattern 1 -- C, D, Db, Eb\nAscending"),
+    #     ("Amm-a", "Pattern 2 -- Am, F#m, G#m, Fm, Gm\nAscending"),
+    #     ("C-d", "Descending"),
+    #     ("Am-d", "Descending"),
+    #     ("G-a", "\nPattern 3 -- G, A, B, F#, Ab, Bb\nAscending"),
+    #     ("Emm-a", "\nPattern 4 -- Em\nAscending"),
+    #     ("G-d", "Descending"),
+    #     ("Em-d", "Descending"),
+    #     ("Bmm-a", "\nPattern 5 -- Bm, Bbm\nAscending"),
+    #     ("E-a", "\nPattern 6 -- E\nAscending"),
+    #     ("Bm-d", "Descending"),
+    #     ("E-d", "Descending"),
+    #     ("C#mm-a", "\nPattern 7 -- C#m, D#m, Cm, Dm\nAscending"),
+    #     ("F-a", "\nPattern 8 -- F\nAscending"),
+    #     ("C#m-d", "Descending"),
+    #     ("F-d", "Descending"),
+    # ]
 
-    for (which, title), ax in zip(cases, axs.flat):
-        plot_scale(
-            which,
-            ax=ax,
-            finger_label_size=7,
-            cell_aspect=0.88,
-            edge_space=0,
-            show_which=False,
-        )
-        title_ = title.replace("--", "\u2013").replace("#", "\u266f").replace("b", "\u266d")
-        ax.set_title(title_)
+    # assert len(cases) == 16
+    # assert len(cases) % 2 == 0
+    # fig, axs = plt.subplots(len(cases) // 2, 2, figsize=(6.8, 8.85), constrained_layout=True)
 
-    fig.get_layout_engine().set(w_pad=4 / 72, wspace=0.2)
+    # for (which, title), ax in zip(cases, axs.flat):
+    #     plot_scale(
+    #         which,
+    #         ax=ax,
+    #         finger_label_size=7,
+    #         cell_aspect=0.88,
+    #         edge_space=0,
+    #         show_which=False,
+    #     )
+    #     title_ = title.replace("--", "\u2013").replace("#", "\u266f").replace("b", "\u266d")
+    #     ax.set_title(title_)
 
-    fig.savefig("all-patterns.svg", bbox_inches="tight", pad_inches=0.05, transparent=True)
+    # fig.get_layout_engine().set(w_pad=4 / 72, wspace=0.2)
+
+    # fig.savefig("all-patterns.svg", bbox_inches="tight", pad_inches=0.05, transparent=True)
