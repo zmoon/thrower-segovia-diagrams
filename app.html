@@ -104,11 +104,9 @@ class HTML:
     def _repr_html_(self):
         return self.html
 
-
 # Get scale key choices
 scale_choices = sorted(segovia.load_data(), key=segovia._sort_scale_key_key)
 scale_choices_combined = segovia._scale_keys_ad
-
 
 def invalid_input_message(scale):
     return HTML(
@@ -150,6 +148,8 @@ def display_scale_svg(event=None):
         svg = f.getvalue()
 
     display(SVG(svg), target="scale-diagram", append=False)
+
+    plt.close(fig)
 
 # Populate scale choices datalist
 datalist = Element(document.getElementById("scale-choices"))
