@@ -633,39 +633,42 @@ def plot_scale(
     ax.yaxis.set_major_locator(plt.NullLocator())
 
 
+_scale_keys_ad = [
+    "C",
+    "C#m",
+    "Cm",
+    "D",
+    "D#m",
+    "Db",
+    "Dm",
+    "E",
+    "Eb",
+    "Em",
+    "F",
+    "F#",
+    "F#m",
+    "Fm",
+    "G",
+    "G#m",
+    "Gm",
+    "A",
+    "Ab",
+    "Am",
+    "B",
+    "Bb",
+    "Bbm",
+    "Bm",
+]
+
+
 def plot_scale_ad(which, *, fig=None, **kwargs):
     """Plot both the ascending and descending versions of a scale on two axes."""
-    allowed_which = [
-        "C",
-        "C#m",
-        "Cm",
-        "D",
-        "D#m",
-        "Db",
-        "Dm",
-        "E",
-        "Eb",
-        "Em",
-        "F",
-        "F#",
-        "F#m",
-        "Fm",
-        "G",
-        "G#m",
-        "Gm",
-        "A",
-        "Ab",
-        "Am",
-        "B",
-        "Bb",
-        "Bbm",
-        "Bm",
-    ]
+    import matplotlib.pyplot as plt
 
-    if which not in allowed_which:
+    if which not in _scale_keys_ad:
         raise ValueError(
             f"Invalid scale: {which!r}. "
-            f"Valid options for ascending + descending plot are: {allowed_which}"
+            f"Valid options for ascending + descending plot are: {_scale_keys_ad}"
         )
 
     cell_aspect = kwargs.pop("cell_aspect", 1.0)
@@ -675,7 +678,7 @@ def plot_scale_ad(which, *, fig=None, **kwargs):
     if fig is None:
         fig, (ax_a, ax_d) = plt.subplots(2, 1, figsize=(10 / cell_aspect, 3.2 * 2))
     else:
-        ax_a, ax_d = fig.get_axes()[:2]
+        ax_a, ax_d = fig.get_axes().flat[:2]
 
     if which.endswith("m"):
         key_a = f"{which}m-a"

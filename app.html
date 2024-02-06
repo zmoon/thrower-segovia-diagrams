@@ -31,14 +31,14 @@
     <py-config type="toml">
     packages = ["numpy", "matplotlib"]
 
-    # For local development (need to run HTTP server):
-    # [[fetch]]
-    # files = ["./segovia.py"]
+    # For local development (need to run HTTP server, e.g. `python -m http.server`):
+    [[fetch]]
+    files = ["./segovia.py"]
 
     # Load from GitHub:
-    [[fetch]]
-    from = "https://raw.githubusercontent.com/zmoon/thrower-segovia-diagrams/main/"
-    files = ["segovia.py"]
+    # [[fetch]]
+    # from = "https://raw.githubusercontent.com/zmoon/thrower-segovia-diagrams/main/"
+    # files = ["segovia.py"]
     </py-config>
 
     <dialog id="loading">
@@ -104,13 +104,42 @@ class HTML:
     def _repr_html_(self):
         return self.html
 
+
+# Get scale key choices
+scale_choices = sorted(segovia.load_data(), key=segovia._sort_scale_key_key)
+scale_choices_combined = segovia._scale_keys_ad
+
+
+def invalid_input_message(scale):
+    return HTML(
+        f"Invalid input {scale!r}. "
+        "Valid examples include: "
+        "'C-a', 'C-d', 'Cmm-a', 'Cm-d', "
+        "'C' (C-a and C-d combined), 'Cm' (Cmm-a and Cm-d combined), etc. "
+        "<br><br><strong>-a</strong> indicates ascending, "
+        "<strong>-d</strong> descending, "
+        "<strong>m</strong> minor (only descending), "
+        "<strong>mm</strong> melodic minor (only ascending). "
+        f"<br><br>Valid individual scale options: {', '.join(scale_choices)}. "
+        "<br><br>Valid combined (ascending and descending together) scale options: "
+        f"{', '.join(scale_choices_combined)}."
+    )
+
 def display_scale_svg(event=None):
     scale = scale_input.value.strip()
 
     console.log(f"scale input: {scale!r}")
 
+    if scale in scale_choices_combined:
+        func = segovia.plot_scale_ad
+    elif scale in scale_choices:
+        func = segovia.plot_scale
+    else:
+        display(invalid_input_message(scale), target="scale-diagram", append=False)
+        return
+
     try:
-        segovia.plot_scale(scale)
+        func(scale)
     except Exception as e:
         display(e, target="scale-diagram", append=False)
         return
@@ -122,12 +151,9 @@ def display_scale_svg(event=None):
 
     display(SVG(svg), target="scale-diagram", append=False)
 
-# Get scale key choices
-scale_choices = sorted(segovia.load_data(), key=segovia._sort_scale_key_key)
-
 # Populate scale choices datalist
 datalist = Element(document.getElementById("scale-choices"))
-for scale in scale_choices:
+for scale in scale_choices + scale_choices_combined:
     option = datalist.create("option", is_child=True)
     option.value = scale
 
