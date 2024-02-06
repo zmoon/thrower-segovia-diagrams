@@ -112,16 +112,16 @@ scale_choices_combined = segovia._scale_keys_ad
 
 def invalid_input_message(scale):
     return HTML(
-        f"Invalid input {scale!r}. "
+        f"<p>Invalid input {scale!r}. "
         "Valid examples include: "
         "C-a, C-d, Cmm-a, Cm-d, "
         "C (C-a and C-d combined), Cm (Cmm-a and Cm-d combined), etc. "
-        "<br><br><strong>-a</strong> indicates ascending, "
+        "<p><strong>-a</strong> indicates ascending, "
         "<strong>-d</strong> descending, "
         "<strong>m</strong> minor (only descending), "
         "<strong>mm</strong> melodic minor (only ascending). "
-        f"<br><br>Valid individual scale options: {', '.join(scale_choices)}. "
-        "<br><br>Valid combined (ascending and descending together) scale options: "
+        f"<p>Valid individual scale options: {', '.join(scale_choices)}. "
+        "<p>Valid combined (ascending and descending together) scale options: "
         f"{', '.join(scale_choices_combined)}."
     )
 
