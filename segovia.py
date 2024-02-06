@@ -667,8 +667,8 @@ def plot_scale_ad(which, *, fig=None, **kwargs):
 
     if which not in _scale_keys_ad:
         raise ValueError(
-            f"Invalid scale: {which!r}. "
-            f"Valid options for ascending + descending plot are: {_scale_keys_ad}"
+            f"Invalid ad (ascending + descending) scale spec: {which!r}. "
+            f"Valid options are: {', '.join(_scale_keys_ad)}."
         )
 
     cell_aspect = kwargs.pop("cell_aspect", 1.0)
