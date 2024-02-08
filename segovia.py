@@ -661,7 +661,7 @@ _scale_keys_ad = [
 ]
 
 
-def plot_scale_ad(which, *, fig=None, **kwargs):
+def plot_scale_ad(which, *, axs=None, **kwargs):
     """Plot both the ascending and descending versions of a scale on two axes."""
     import matplotlib.pyplot as plt
 
@@ -675,10 +675,10 @@ def plot_scale_ad(which, *, fig=None, **kwargs):
     if "ax" in kwargs:
         del kwargs["ax"]
 
-    if fig is None:
-        fig, (ax_a, ax_d) = plt.subplots(2, 1, figsize=(10 / cell_aspect, 3.2 * 2))
+    if axs is None:
+        _, (ax_a, ax_d) = plt.subplots(2, 1, figsize=(10 / cell_aspect, 3.2 * 2))
     else:
-        ax_a, ax_d = fig.get_axes().flat[:2]
+        ax_a, ax_d = axs
 
     if which.endswith("m"):
         key_a = f"{which}m-a"
